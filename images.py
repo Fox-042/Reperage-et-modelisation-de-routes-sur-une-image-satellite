@@ -1,33 +1,40 @@
 import numpy as np
-import cv2
 from matplotlib import pyplot as plt
- 
-img = cv2.imread('batman.jpg')
-assert img is not None, "file could not be read, check with os.path.exists()"
-edges = cv2.Canny(img,100,200)
+import random
+import cv2
+import traces
+
+def lit_image(entree, sortie, affiche = False):
+    ksize = 5
+    img = cv2.imread(entree)
+    assert img is not None, "erreur - chemin non trouvé"
+    gaussian_blurr = cv2.GaussianBlur(img, (ksize,ksize),0)
+    edges = cv2.Canny(gaussian_blurr,100,200)
+    if affiche:
+        plt.subplot(121)
+        plt.imshow(gaussian_blurr)
+        plt.title('Gaussian Image')
+        plt.subplot(122)
+        plt.imshow(edges,cmap = 'gray')
+        plt.title('Edge Image')
+        plt.show()
 
 
-height, width, color = img.shape
-white_pixels = []
-prev=0
-f=open("points.txt",'w')
-for x in range(width):
-    for y in range (height):
-        if edges[y, x] == 255:
-            white_pixels.append((x,y))
-            img[y, x] = [0, 0, 255]
-            prev = x
-            f.write(str(x)+","+str(height-y)+"\n")
-f.close()
+    height, width, color = img.shape
+    white_pixels = []
+    prev=0
+    f=open(sortie,'w')
+    for x in range(width):
+        for y in range (height):
+            if edges[y, x] == 255:
+                white_pixels.append((x,y))
+                img[y, x] = [0, 0, 255]
+                prev = x
+                f.write(str(x)+","+str(height-y)+"\n")
+    f.close()
+#lit_image('batman.jpg',"points.txt")
+lit_image('road01.jpg',"points_road01.txt")
 
-"""plt.subplot(121)
-plt.imshow(img)
-plt.title('Original Image'), 
-plt.subplot(122)
-plt.imshow(edges,cmap = 'gray')
-plt.title('Edge Image')
- 
-plt.show()"""
 
 def lit_points(nom):
     res = []
@@ -40,54 +47,88 @@ def lit_points(nom):
     #print(res)
     return res
 
-points = lit_points("points.txt")
+#points = lit_points("points.txt")
+points = lit_points("points_road01.txt")
+
 """x = np.array([i[0] for i in points])
 y = np.array([i[1] for i in points])
 plt.plot(x, y, 'o', label= 'points')
 plt.show()"""
 
+
 def differencie_points(points):
-    fonctions = []
-    nb_f = 0
-    for p in points:
-        if nb_f == 0:
-            fonctions.append([p])
-            nb_f+=1
-        else:
-            i=0
-            trouve = False
-            min_d = float('inf')
-            fonctions_logiques = [float('inf') for i in range (nb_f)]
-            while i < nb_f:
-                f = fonctions[i]
-                y = abs(p[1] -f[-1][1])
-                x = abs(p[0] -f[-1][0])
-                m=x+y
-                if p[0] != f[-1][0]:
-                    fonctions_logiques[i] = m
-                    trouve = True
-                    if m < min_d:
-                        min_d = m
-                elif m < 30:
-                    trouve = True #le point est inutile, on ne le met nulle part
-                    if m < min_d:
-                        min_d = m
-                i+=1
-            if trouve and min_d < 120:
-                j=fonctions_logiques.index(min(fonctions_logiques))
-                fonctions[j].append(p)
-            elif min_d>30:
-                fonctions.append([p])
-                nb_f+=1
-    return fonctions
+    courbes = [[points[0]]]
+    for p in points[1:]:
+        indice = 0
+        d_min = float('inf')
+        for i, courbe in enumerate(courbes):
+            y = abs(p[1] -courbe[-1][1])
+            x = abs(p[0] -courbe[-1][0])
+            dist=x+y
+            if dist<d_min:
+                d_min = dist
+                indice = i
+        if p[0]!=courbes[indice][-1][0]:
+            if d_min < 50:
+                courbes[indice].append(p)
+            else:
+                courbes.append([p])
+        elif d_min>90:
+            courbes.append([p])
+    return courbes
+                
+def trace_courbes(courbes):
+    plt.figure(figsize=(8, 6))
+    
+    for courbe in courbes:
+        x = [p[0] for p in courbe]
+        y = [p[1] for p in courbe]
+        couleur = (random.random(), random.random(), random.random())  # couleur aléatoire
+        plt.plot(x, y, marker='o', linestyle='-', color=couleur)
+    
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Tracé des courbes différenciées")
+    plt.grid(True)
+    plt.show()
+
+def separe_euler(courbe):
+    courbes = [[]]
+    n = len(courbe)
+    j = 0
+    for i in range(n):
+        if i != 0 and i !=n-1 :
+            b_euler = (courbe[i][1] - courbe[i-1][1])/(courbe[i][0] - courbe[i-1][0])
+            f_euler = (courbe[i+1][1] - courbe[i][1])/(courbe[i+1][0] - courbe[i][0])
+            diff = abs(f_euler - b_euler)
+            prod = f_euler * b_euler
+            print(prod, diff)
+            if diff < 30 and prod>-0.25:
+                courbes[j].append(courbe[i])
+                print(diff)
+            else:
+                courbes.append([]) 
+                j+=1
+                courbes[j].append(courbe[i])
+    return courbes
+
 
 diff_f = differencie_points(points)
+diff_f = [f for f in diff_f if len(f)>16]
 
-diff_f = [f for f in diff_f if len(f)>100]
+#print(len(diff_f))
+courbes_derivables = []
+for c in diff_f:
+    d = separe_euler(c)
+    for courbe in d:
+        if (len(courbe)>18):
+            courbes_derivables.append(courbe)
+#print(courbes_derivables)
+#trace_courbes(courbes_derivables)
+traces.interpole_par_splines(courbes_derivables)
+#trace_courbes(diff_f)
 
-print(diff_f[1])
-print(len(diff_f))
-plt.close()
+"""plt.close()
 fig, axs = plt.subplots(len(diff_f), sharex=True)
 fig.suptitle('Différentes sous fonctions identifiées')
 for j in range(len(diff_f)):
@@ -95,3 +136,4 @@ for j in range(len(diff_f)):
     y = np.array([i[1] for i in diff_f[j]])
     axs[j].plot(x, y)
 plt.show()
+"""
