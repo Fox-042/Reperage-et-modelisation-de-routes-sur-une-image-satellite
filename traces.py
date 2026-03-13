@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from decimal import Decimal as d
 from scipy.interpolate import CubicSpline
+import random
 
 def trace_points(ax1,points : list):
     liste_x = [(points[3:-3])[i][0] for i in range (len(points[3:-3]))]
@@ -108,4 +109,88 @@ def lagrange_final():
     plt.tight_layout()
     plt.show()
 
+
+
+
+def differencie_points(points, dist_min):
+    courbes = [[points[0]]]
+    for p in points[1:]:
+        indice = 0
+        d_min = float('inf')
+        for i, courbe in enumerate(courbes):
+            y = abs(p[1] - courbe[-1][1])
+            x = abs(p[0] - courbe[-1][0])
+            dist=x+y
+            if dist<d_min:
+                d_min = dist
+                indice = i
+        if p[0]!=courbes[indice][-1][0]:
+            if d_min < dist_min:
+                courbes[indice].append(p)
+            else:
+                courbes.append([p])
+        elif d_min>2*dist_min:
+            courbes.append([p])
+    return courbes
+
+def filtre_courbes_concat (courbes, taille_min):
+    res = []
+    for c in courbes:
+        if len(c)>taille_min:
+            res+= c
+    return res
+    
+                
+def trace_courbes(courbes, marker = 'o'):
+    plt.figure(figsize=(8, 6))
+    
+    for courbe in courbes:
+        x = [p[0] for p in courbe]
+        y = [p[1] for p in courbe]
+        couleur = (random.random(), random.random(), random.random())  # couleur aléatoire
+        plt.plot(x, y, marker=marker, linestyle='-', color=couleur)
+    
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Tracé des courbes différenciées")
+    plt.grid(True)
+    plt.show()
+
+def separe_euler(courbe):
+    courbes = [[]]
+    n = len(courbe)
+    j = 0
+    for i in range(n):
+        if i != 0 and i !=n-1 :
+            b_euler = (courbe[i][1] - courbe[i-1][1])/(courbe[i][0] - courbe[i-1][0])
+            f_euler = (courbe[i+1][1] - courbe[i][1])/(courbe[i+1][0] - courbe[i][0])
+            diff = abs(f_euler - b_euler)
+            prod = f_euler * b_euler
+            print(prod, diff)
+            if diff < 30 and prod>-0.25:
+                courbes[j].append(courbe[i])
+                print(diff)
+            else:
+                courbes.append([]) 
+                j+=1
+                courbes[j].append(courbe[i])
+    return courbes
+
+
+"""diff_f = differencie_points(points)
+diff_f = [f for f in diff_f if len(f)>16]
+
+#print(len(diff_f))
+courbes_derivables = []
+for c in diff_f:
+    d = separe_euler(c)
+    for courbe in d:
+        if (len(courbe)>18):
+            courbes_derivables.append(courbe)
+#print(courbes_derivables)
+#trace_courbes(courbes_derivables)
+interpole_par_splines(courbes_derivables)
+#trace_courbes(diff_f)
+
 #ON VEUT RECUPERER LES POINTS D'UNE IMAGE
+"""
