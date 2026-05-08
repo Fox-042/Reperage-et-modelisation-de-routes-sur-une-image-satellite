@@ -70,7 +70,7 @@ def spline(a,b,c,d,xi,x):
  
 
 def interpole(points, N, deb, fin):
-    points.sort()
+    points.sort()# jai un doute- semble contraire au pricipe. 17/03/2026
     print(len(points), " : points")
     X = [c[0] for c in points]
     Y = [c[1] for c in points]
@@ -91,7 +91,7 @@ def interpole(points, N, deb, fin):
     tracer(courbe,"courbe","abcisse")
     return courbe
 
-def splines_parametres(points, N, deb, fin):
+def splines_parametres(points, N):
     ecart = [sqrt(x**2+y**2) for x, y in points]
     t = [sum(ecart[:i]) for i in range (len(points))]
     x = [(t[i],c[0]) for i,c in enumerate(points)]
@@ -99,8 +99,8 @@ def splines_parametres(points, N, deb, fin):
     
     y = [(t[i],c[1]) for i,c in enumerate(points)]
     tracer(y,"t","y")
-    xt = interpole(x,N,deb,t[-1])
-    yt = interpole(y,N,deb,t[-1])
+    xt = interpole(x,N,t[0],t[-1])
+    yt = interpole(y,N,t[0],t[-1])
 
     tracer(xt,"t","x_interpolée")
     print("2")

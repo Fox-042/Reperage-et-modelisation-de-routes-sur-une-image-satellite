@@ -65,12 +65,13 @@ def grayscale(img):
     for j in range(height):
         for i in range(width):
             b,g,r = img[j,i]
-            res[j,i] = [(b+g+r)/3,(b+g+r)/3,(b+g+r)/3]
+            val=b/3 + g/3 +r/3
+            res[j,i] = [val,val,val]
     return res
 
 def grad_matrix(n):
     k=2*n+1 
-    sigma = k/6
+    sigma = (k-1)/6
     G = weight_matrix(n)
     Kx = [[0 for _ in range(k)] for _ in range(k)]
     Ky = [[0 for _ in range(k)] for _ in range(k)]
@@ -91,8 +92,10 @@ def grad_image(img,n):
         for j in range(height):
             x = point_value(i,j,Kx,img,n,width,height)[1]
             y = point_value(i,j,Ky,img,n,width,height)[1]
-            grad[j,i]=sqrt(x**2+y**2)
+            grad[j][i]=sqrt(x**2+y**2)
             theta[j][i]=atan2(y,x)
+            if theta<0:
+                theta=theta+pi
             n_s = abs(theta[j][i]-pi/2)
             nw_se = abs(theta[j][i]-(3*pi)/4)
             ne_sw = abs(theta[j][i]-pi/4)
@@ -109,21 +112,41 @@ def grad_image(img,n):
                 theta[j][i] = "e_w"
     return grad, theta
 
-def gradient_magnitude_threshholding(img, n):
+def neighbors(i,j,I,J):
+    res=[]
+    if i<I-1:
+        res.append((i+1,j))
+        if j>0:
+            res.append((i+1,j-1))
+        if j<J-1:
+            res.append((i+1,j+1))
+    if i>0:
+        res.append((i-1,j))
+        if j>0:
+            res.append((i-1,j-1))
+        if j<J-1:
+            res.append((i-1,j+1))
+    if j>0:
+        res.append((i,j-1))
+    if j<J-1:
+        res.append((i,j+1))
+    return res    
+
+def gradient_magnitude_threshholding(img,n_gauss, n_canny):
     height, width, _ = img.shape
     gray = grayscale(img)
-    blury = gaussian_blur(gray,10)
-    grad, theta = grad_image(blury,n)
+    blury = gaussian_blur(gray,n_gauss)
+    grad, theta = grad_image(blury,n_canny)
     strength = [[0 if grad[j][i]<0.1 else 1 if grad[j][i]<0.3 else 2 for i in range(width)] for j in range(height)]
+    threshold1=0.1
+    threshold2=0.3
     res = img.copy()
     for i in range(width):
         for j in range(height):
-            kept = True
-            if strength[j][i]==0:
-                kept = False
-            else if
-
-
+            if grad[j][i]>threshold1:
+                strength[j][i] = 1
+            if grad[j][i]>threshold2:
+                strength[j][i]=2
             if theta[j][i] =="n_s":
                 if j>0 and j<height-1 and grad[j-1][i]<grad[j][i] and grad[j][i]>grad[j+1][i]:
                     res[j,i] = [255,255,255]
@@ -135,17 +158,38 @@ def gradient_magnitude_threshholding(img, n):
                 else:
                     res[j,i] = [0,0,0]
             elif theta[j][i] =="nw_se":
-                if i>0 and i<height-1 and j>0 and j<width-1 and grad[j+1][i-1]<grad[j][i] and grad[j][i]>grad[j-1][i+1]:
+                if i>0 and i<width-1 and j>0 and j<height-1 and grad[j+1][i-1]<grad[j][i] and grad[j][i]>grad[j-1][i+1]:
                     res[j,i] = [255,255,255]
                 else:
                     res[j,i] = [0,0,0]
             elif theta[j][i] =="ne_sw":
-                if i>0 and i<height-1 and j>0 and j<width-1 and grad[j+1][i+1]<grad[j][i] and grad[j][i]>grad[j-1][i-1]:
+                if i>0 and i<width-1 and j>0 and j<height-1 and grad[j+1][i+1]<grad[j][i] and grad[j][i]>grad[j-1][i-1]:
                     res[j,i] = [255,255,255]
                 else:
                     res[j,i] = [0,0,0]
-            else :
-                res[j,i]=[0,0,255]
+            else:
+                res[j,i]=[0,0,255] #red = problem, should not actually happen (bgr)
+
+    #applying hysterisis with queue method
+    q = []
+    for i in range(width):
+        for j in range(height):
+            if strength[j][i]==2:
+                q.append((i,j))
+    while len(q)>0:
+        i,j=q.pop(0)
+        neighborhood = neighbors(i,j,width,height)
+        for n in neighborhood:
+            i_n,j_n=n
+            if strength[j_n][i_n]==1 and res[j_n,i_n]==[255,255,255]:
+                strength[j_n][i_n]=2
+                q.append((i_n,j_n))
+    
+    for i in range(width):
+        for j in range(height):
+            if strength[j][i]<2:
+                res[j,i]=[0,0,0]
+
     return res
             
 

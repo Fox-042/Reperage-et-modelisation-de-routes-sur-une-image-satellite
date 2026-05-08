@@ -147,8 +147,7 @@ def staline_filter(points):
     return res
 
 
-"""
-print("start")
+"""print("start")
 #points = lit_points("points_road01.txt")
 points = lit_points("Gemini_Generated_Image_road_01_v3.png.txt")
 print("a lu")
@@ -182,7 +181,6 @@ print("Done")
 img = cv2.imread("road01v2.jpg")
 can = c.gradient_magnitude_threshholding(img, 5)
 cv2.imshow(can)
-
 
 
 
