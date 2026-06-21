@@ -1,12 +1,12 @@
 import cv2
 import subprocess
 
-import traces as t
-import canny as c
+from scripts import traces as t
+from scripts import canny as c
 
 def lit_image(entree, sortie, affiche = False):
-    nsize_blurr = 4 # k vaut 2*n +1
-    nsize_grad = 4
+    nsize_blurr = 1 # k vaut 2*n +1
+    nsize_grad = 1
 
     sigma_blurr = 5 #prev:3
     sigma_grad = 13
@@ -28,11 +28,12 @@ def lit_image(entree, sortie, affiche = False):
     f.close()
 
 #nom de l'image SANS EXTENSION pour plus facilement creer les fichiers coorects ensuite
+
 nom = "road01" 
 extension = ".jpg"
 
-#lit_image(nom + extension, nom +".txt", True)
-points = t.lit_points(nom + ".txt")
+#lit_image("images_a_traiter/" + nom + extension, nom +".txt", True)
+points = t.lit_points("textes/" + nom + ".txt")
 
 
 
@@ -73,14 +74,14 @@ routes = []
 #print(len(routes_bruttes))
 for r in routes_bruttes:
     
-    f=open("entree.txt",'w')
+    f=open("textes/entree.txt",'w')
     f.write(str(len(r))+"\n")
     f.write(str(N)+"\n")
 
     for i in range(len(r)):
         f.write(str(r[i][0])+","+str(r[i][1])+"\n")
     f.close()
-    result = subprocess.run(["./splines.exe"], capture_output=True,text=True)
+    result = subprocess.run(["./scripts/splines.exe"], capture_output=True,text=True)
     
     print("stdout:")
     print(result.stdout)
@@ -92,7 +93,7 @@ for r in routes_bruttes:
     print(result.returncode)
         
 
-    f2= open("sortie.txt",'r')
+    f2= open("textes/sortie.txt",'r')
     route = []
     for i in f2.readlines():
         a,b = i.split(",")

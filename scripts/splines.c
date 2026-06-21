@@ -240,9 +240,9 @@ int main(){
     int n;
     int N;
     point** points;
-    lit_donnees(&points, &n, &N, "entree.txt");
+    lit_donnees(&points, &n, &N, "textes/entree.txt");
     point** resultat = splines_paramatrees(points, n, N);
-    ecrit_resultat(resultat, n, N,"sortie.txt");
+    ecrit_resultat(resultat, n, N,"textes/sortie.txt");
 
     return 0;
 }

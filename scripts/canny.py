@@ -63,7 +63,7 @@ def gaussian_blur(img, n, sigma, affiche = False):
         for i in range(width):
             res[j,i]=point_value(i,j,weights,img,n,width,height)
     if affiche:
-        cv2.imwrite("image floue.png",res)
+        cv2.imwrite("resultats/image floue.png",res)
         print("image floue mise à jour")
     return res
 
@@ -76,7 +76,7 @@ def grayscale(img, affiche = False):
             val=b/3 + g/3 +r/3
             res[j,i] = [val,val,val]
     if affiche:
-        cv2.imwrite("image grise.png",res)
+        cv2.imwrite("resultats/image grise.png",res)
         print("image grise mise à jour")
     return res
 
@@ -136,13 +136,13 @@ def grad_image(img,n, sigma,show=False):
         m2=max([max(l) for l in X])
         print("m1 et m2 : "+str(m1)+ ", "+str(m2))
         norme1 = matplotlib.colors.TwoSlopeNorm(0,m1,m2)
-        plt.imsave("gradientX.png", X, cmap=cmap, vmin=m1, vmax=m2)
+        plt.imsave("resultats/gradientX.png", X, cmap=cmap, vmin=m1, vmax=m2)
 
 
         m1=min([min(l)for l in Y])
         m2=max([max(l) for l in Y])
         norme1 = matplotlib.colors.TwoSlopeNorm(0,m1,m2)
-        plt.imsave("gradientY.png", Y, cmap=cmap, vmin=m1, vmax=m2)
+        plt.imsave("resultats/gradientY.png", Y, cmap=cmap, vmin=m1, vmax=m2)
     return grad, theta
 
 def neighbors(i,j,I,J):
@@ -173,7 +173,7 @@ def gradient_magnitude_threshholding(img,n_gauss, sigma_gauss, n_grad, sigma_gra
     if affiche:
         m1=min([min(l)for l in grad])
         m2=max([max(l) for l in grad])
-        plt.imsave("grad.png", grad, cmap="gray_r", vmin=m1, vmax=m2)
+        plt.imsave("resultats/grad.png", grad, cmap="gray_r", vmin=m1, vmax=m2)
 
         theta2 = [[0 for _ in range(width)] for _ in range(height)]
         for i in range(width):
@@ -188,7 +188,7 @@ def gradient_magnitude_threshholding(img,n_gauss, sigma_gauss, n_grad, sigma_gra
                     theta2[j][i]=3
 
         cmap = matplotlib.colors.ListedColormap(["red", "green", "blue", "yellow"])
-        plt.imsave("theta2.png", theta2, cmap=cmap, vmin=0, vmax=3)
+        plt.imsave("resultats/theta2.png", theta2, cmap=cmap, vmin=0, vmax=3)
         plt.imshow(theta2, cmap=cmap, vmin=0, vmax=3)
 
         plt.colorbar()
@@ -228,11 +228,11 @@ def gradient_magnitude_threshholding(img,n_gauss, sigma_gauss, n_grad, sigma_gra
     
     if affiche :
         cmap = matplotlib.colors.ListedColormap(["white", "gray", "black"])
-        plt.imsave("strength bzfore.png", strength, cmap=cmap, vmin=0, vmax=2)
+        plt.imsave("resultats/strength bzfore.png", strength, cmap=cmap, vmin=0, vmax=2)
         plt.imshow(strength, cmap=cmap, vmin=0, vmax=3)
         plt.colorbar()
 
-    cv2.imwrite("image avant hysterisis.png", res)
+    cv2.imwrite("resultats/image avant hysterisis.png", res)
     #applying hysterisis with queue method
     q = []
     for i in range(width):
@@ -255,10 +255,10 @@ def gradient_magnitude_threshholding(img,n_gauss, sigma_gauss, n_grad, sigma_gra
     if affiche:
         cv2.imshow("image resultante", res)
 
-        cv2.imwrite("image resultante.png", res)
+        cv2.imwrite("resultats/image resultante.png", res)
 
         cmap = matplotlib.colors.ListedColormap(["white", "gray", "black"])
-        plt.imsave("strength after.png", strength, cmap=cmap, vmin=0, vmax=2)
+        plt.imsave("resultats/strength after.png", strength, cmap=cmap, vmin=0, vmax=2)
         plt.imshow(strength, cmap=cmap, vmin=0, vmax=3)
         plt.colorbar()
 

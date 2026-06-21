@@ -256,7 +256,7 @@ import subprocess
 def splines_illustration():
     plt.figure(figsize=(8, 6))
     points=[(0,0),(1,3),(2,1),(3,2),(4,5),(5,1)]
-    f=open("entree.txt",'w')
+    f=open("../textes/entree.txt",'w')
     f.write(str(len(points))+"\n")
     f.write(str(1000)+"\n")
     X=[p[0] for p in points]
@@ -266,7 +266,7 @@ def splines_illustration():
         f.write(str(points[i][0])+","+str(points[i][1])+"\n")
     f.close()
     result = subprocess.run(["./splines.exe"], capture_output=True,text=True)
-    f2= open("sortie.txt",'r')
+    f2= open("../textes/sortie.txt",'r')
     courbe = []
     for i in f2.readlines():
         a,b = i.split(",")
