@@ -32,7 +32,7 @@ void splines_cubiques(fonction* sortie, double* x, double* y, int n){
     double* alpha = malloc((n-1)* sizeof(double));
     alpha[0]=0;
     for (int i=1;i<n-1;i++){
-        alpha[i]=(3/intervalles[i])*(y[i+1]-y[i])-(3/intervalles[i-1])*(y[i]-y[i-1]);
+        alpha[i]=(3.0/intervalles[i])*(y[i+1]-y[i])-(3.0/intervalles[i-1])*(y[i]-y[i-1]);
     }
     double* l = malloc((n)* sizeof(double));
     double* mu = malloc((n-1)* sizeof(double));
@@ -47,13 +47,15 @@ void splines_cubiques(fonction* sortie, double* x, double* y, int n){
     }
     l[n-1]=1;
     z[n-1]=0;
-
+    
     double* a = y; //renommage pour lisiblilité; N'EST PAS UNE COPIE
     double* b = malloc(n*sizeof(double));
     double* c = malloc(n*sizeof(double));
     double* d = malloc(n*sizeof(double));
 
-    for(int i = n-2; i>-1;-1){
+    c[n-1]=0;
+
+    for(int i = n-2; i>-1;i--){
         c[i]=z[i]-mu[i]*c[i+1];
         b[i] = (y[i+1] - y[i])/intervalles[i] - intervalles[i]*(c[i+1] + 2*c[i]) / 3;
         d[i] = (c[i+1] - c[i]) / (3*intervalles[i]);
@@ -108,17 +110,17 @@ point * interpole(point** points,int n,int N, double deb, double fin){
     point* courbe =malloc(N*sizeof (point));
     fonction * sp = malloc(sizeof(fonction));
     sp->taille = n-1;
-    sp->splines=malloc((n-1)*sizeof(spline**));
+    sp->splines=malloc((n-1)*sizeof(spline*));
     for (int i = 0; i < n-1; i++) {
-        sp->splines[i] = malloc(sizeof(spline*));
+        sp->splines[i] = malloc(sizeof(spline));
     }
     splines_cubiques(sp,X,Y,n);
-    
+
     
     for(int i=0; i<N;i++){
         double x = deb+i*h;
         int j=0;
-        while(j<n-1 && X[j+1]<=x){
+        while(j<n-2 && X[j+1]<=x){
             j++;
         }
         double a = sp->splines[j]->a;
@@ -129,6 +131,7 @@ point * interpole(point** points,int n,int N, double deb, double fin){
         courbe[i].y = evalue_spline(sp->splines[j],X[j],x);
 
     }
+  
      for (int i = 0; i < n-1; i++) {
         free(sp->splines[i]);
     }
@@ -140,6 +143,7 @@ point * interpole(point** points,int n,int N, double deb, double fin){
 }
 
 point** splines_paramatrees(point** points, int n, int N){
+
     point** pts_x=malloc(n*sizeof(point*));
     point** pts_y=malloc(n*sizeof (point*));
 
@@ -209,8 +213,6 @@ void lit_donnees(point*** points, int*n, int*N, char* nom_fichier){
 
 void ecrit_resultat(point** points, int n, int N, char* nom_fichier){
     /*format du fichier sortant:
-    n
-    N
     x,y
     ...
 
@@ -218,19 +220,15 @@ void ecrit_resultat(point** points, int n, int N, char* nom_fichier){
     */
     FILE* sortie;
     
-    sortie = fopen(nom_fichier,"w");
+    sortie = fopen(nom_fichier,"w+");
 
     if (!sortie) {
         perror("erreur fopen");
         return;
     }
 
-    fprintf(sortie,"%d\n",n);
-    fprintf(sortie,"%d\n",N);
-
-
     for (int i=0;i<N;i++){
-        fprintf(sortie,"%lf,%lf\n",&((points)[i]->x),&(points)[i]->y);
+        fprintf(sortie,"%lf,%lf\n",((points)[i]->x),(points)[i]->y);
         free(points[i]);
     }
 
@@ -242,11 +240,9 @@ int main(){
     int n;
     int N;
     point** points;
-    
     lit_donnees(&points, &n, &N, "entree.txt");
     point** resultat = splines_paramatrees(points, n, N);
-    ecrit_resultat(points, n, N,"sortie.txt");
-
+    ecrit_resultat(resultat, n, N,"sortie.txt");
 
     return 0;
 }
