@@ -4,7 +4,7 @@ Le but de ce projet est de detecter les routes sur les images satellites.
 
 Contenu:
 
-- main.py
+- main.py : contient en début de ficher les paramètres à faire varier. Pour faire tourner le code, lancer ce ficher A PARTIR DE SON DOSSIER PARENT, donc de la racine du projet.
 
  - images_a_traiter : dossier de rangement des images sur lesquelles je travaille, dont des images experimentales traitées par IA pour voir la réaction de mon code à des situations avec plus ou moins de bruit.
 
