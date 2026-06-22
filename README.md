@@ -10,7 +10,7 @@ Contenu:
 
  - resultats : dossier dans lequel sont sauvegardées toutes les images générées par le code - ATTENTION, elles sont remplacées à chaque exécution du main, à moins de les renomer en prolongeant les noms ou de les sauvgarder ailleurs.
 
- - textes : contient les fichiers textes représentant soit des informations sauvgardées, soit des fuchuers de communication utilisés entre le c et le python. Ils peuvent être réecrits à tout moment, il faut donc encore ici les renommer ou les sauvegarder ailleurs si l'on souhaite les conserver.
+ - textes : dossier qui contient les fichiers textes représentant soit des informations sauvgardées, soit des fuchuers de communication utilisés entre le c et le python. Ils peuvent être réecrits à tout moment, il faut donc encore ici les renommer ou les sauvegarder ailleurs si l'on souhaite les conserver.
 
 - scripts : contient des fichiers codes 
     - interpolate.py : plus utilisé, code python d'interpolation par splines cubiques
