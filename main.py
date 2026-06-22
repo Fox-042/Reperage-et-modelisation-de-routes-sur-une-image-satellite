@@ -32,7 +32,7 @@ def lit_image(entree, sortie, affiche = False):
 nom = "road01" 
 extension = ".jpg"
 
-#lit_image("images_a_traiter/" + nom + extension, nom +".txt", True)
+lit_image("images_a_traiter/" + nom + extension, nom +".txt", True)
 points = t.lit_points("textes/" + nom + ".txt")
 
 
