@@ -6,6 +6,7 @@ from scripts import canny as c
 
 
 #*****PARAMETRES A REGLER*****************************************
+
 # k = 2*n+1 est la taille des noyaux 
 n_flou = 1
 n_gradian = 1

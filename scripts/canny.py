@@ -228,7 +228,7 @@ def gradient_magnitude_threshholding(img,n_gauss, sigma_gauss, n_grad, sigma_gra
     
     if affiche :
         cmap = matplotlib.colors.ListedColormap(["white", "gray", "black"])
-        plt.imsave("resultats/strength bzfore.png", strength, cmap=cmap, vmin=0, vmax=2)
+        plt.imsave("resultats/strength before.png", strength, cmap=cmap, vmin=0, vmax=2)
         plt.imshow(strength, cmap=cmap, vmin=0, vmax=3)
         plt.colorbar()
 
