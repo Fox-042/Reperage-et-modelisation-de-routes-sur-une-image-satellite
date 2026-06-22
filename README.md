@@ -2,7 +2,7 @@
 
 Le but de ce projet est de detecter les routes sur les images satellites.
 
-#Contenu:
+Contenu:
 
 - main.py : contient en début de ficher les paramètres à faire varier. Pour faire tourner le code, lancer ce ficher A PARTIR DE SON DOSSIER PARENT, donc de la racine du projet.
 
@@ -19,5 +19,5 @@ Le but de ce projet est de detecter les routes sur les images satellites.
     - traces.py : contient les petits codes autres, notemment les tris et filtres des points
 
 
-#Utilisation :
+Utilisation :
     Après avoir choisi les paramètres au début du fichier main, lancer ce dernier à partir de la racine du projet. Attention, l'exécution de la partie traitement d'image peut être très chronophage, et l'es d'audant plus si la taille des noyeaux est élevée.
