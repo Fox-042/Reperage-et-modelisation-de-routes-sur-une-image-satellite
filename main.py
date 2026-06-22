@@ -4,13 +4,22 @@ import subprocess
 from scripts import traces as t
 from scripts import canny as c
 
-def lit_image(entree, sortie, affiche = False):
-    nsize_blurr = 1 # k vaut 2*n +1
-    nsize_grad = 1
 
-    sigma_blurr = 5 #prev:3
-    sigma_grad = 13
+#*****PARAMETRES A REGLER*****************************************
+# k = 2*n+1 est la taille des noyaux 
+n_flou = 1
+n_gradian = 1
 
+#le sigma de chaque gausienne
+sigma_flou = 5
+sigma_gradian = 13
+
+#les paramètres de tri et filtrge des curbes
+distance_entre_routes = 20      #utilisé pour définir quel ensemble de points forme quelle route
+taille_courbe_min = 50          #seuil de nombre de points en dessous duquel une courbe est vue comme du bruit et donc supprimée
+#****************************************************************
+
+def lit_image(entree, sortie, affiche = False,nsize_blurr=n_flou,nsize_grad=n_gradian,sigma_blurr=sigma_flou,sigma_grad = sigma_gradian):
     img = cv2.imread(entree)
     assert img is not None, "erreur : chemin non trouve"
     edges = c.gradient_magnitude_threshholding(img,nsize_blurr,sigma_blurr,nsize_grad,sigma_grad, affiche)
@@ -32,7 +41,7 @@ def lit_image(entree, sortie, affiche = False):
 nom = "road01" 
 extension = ".jpg"
 
-lit_image("images_a_traiter/" + nom + extension, nom +".txt", True)
+lit_image("images_a_traiter/" + nom + extension, "textes/"+nom +".txt", True)
 points = t.lit_points("textes/" + nom + ".txt")
 
 
@@ -42,20 +51,23 @@ points = t.lit_points("textes/" + nom + ".txt")
 #On trie les points:
 
 #1) on enlève ce qui ne fait pas partie d'une courbe lisse ou homogène:
-courbes = t.differencie_points(points, 20)
+
+courbes = t.differencie_points(points, distance_entre_routes)
 #t.trace_courbes(courbes, linestyle='')
+
 for _ in range(5):
     courbes = t.trie_recolle(courbes,20)
+
 #2) on sépare les "segments de routes"
-#print("here py")
-#print(courbes)
+
+
 routes_bruttes0, jonctions_bruttes = [],[]
 for c in courbes:
     r,l = t.separe_euler(c)
     routes_bruttes0+=r
     jonctions_bruttes+=l
-routes_bruttes = t.filtre_courbes(routes_bruttes0,50)
-#print("here py1")
+routes_bruttes = t.filtre_courbes(routes_bruttes0,taille_courbe_min)
+
 t.trace_courbes(routes_bruttes, linestyle='')
 
 
