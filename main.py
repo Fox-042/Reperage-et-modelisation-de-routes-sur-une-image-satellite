@@ -8,8 +8,8 @@ from scripts import canny as c
 #*****PARAMETRES A REGLER*****************************************
 
 # k = 2*n+1 est la taille des noyaux 
-n_flou = 1
-n_gradian = 1
+n_flou = 4
+n_gradian = 4
 
 #le sigma de chaque gausienne
 sigma_flou = 5
