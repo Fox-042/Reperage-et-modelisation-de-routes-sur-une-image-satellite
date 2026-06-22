@@ -20,4 +20,4 @@ Contenu:
 
 
 Utilisation :
-    Après avoir choisi les paramètres au début du fichier main, lancer ce dernier à partir de la racine du projet. Attention, l'exécution de la partie traitement d'image peut être très chronophage, et l'es d'audant plus si la taille des noyeaux est élevée.
+    Après avoir choisi les paramètres au début du fichier main, lancer ce dernier à partir de la racine du projet. Attention, l'exécution de la partie traitement d'image peut être très chronophage, et l'es d'audant plus si la taille des noyaux est élevée.
